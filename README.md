@@ -1,1 +1,1 @@
-# TechBlog
+#Hospital Management system

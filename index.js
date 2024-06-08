@@ -3,30 +3,27 @@ const express = require('express');
 const { User } = require('./schema.js'); // Importing User model from schema.js
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const cors=require('cors')
+const cors = require('cors');
 
-const app = express()
-app.use(bodyParser.json())
-app.use(cors())
-
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
 
 async function connectToDb() {
     try {
-        await mongoose.connect('mongodb+srv://Aarthis09:Aarthi1234@cluster0.kexotzh.mongodb.net/HospitalManagementSystem?retryWrites=true&w=majority&appName=Cluster00')
-        console.log('DB Connection established')
-        const port = process.env.PORT || 8002 // in cloud service take any port no which is avaliable(process.env.PORT) , in local machine it will take 8002 as port number
+        await mongoose.connect('mongodb+srv://Aarthis09:Aarthi1234@cluster0.kexotzh.mongodb.net/HospitalManagementSystem?retryWrites=true&w=majority&appName=Cluster00');
+        console.log('DB Connection established');
+        const port = process.env.PORT || 8002; // In cloud service, take any available port (process.env.PORT), on local machine it will take 8002 as port number
         app.listen(port, function () {
-            console.log(`Listening on port ${port} `)
-        })
+            console.log(`Listening on port ${port}`);
+        });
     } catch (error) {
-        console.log(error)
-        console.log("Couldn't establish connection")
+        console.log(error);
+        console.log("Couldn't establish connection");
     }
 }
 
-
-connectToDb()
-
+connectToDb();
 
 app.post('/login', async (req, res) => {
     try {
@@ -81,5 +78,28 @@ app.post('/signup', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+});
+
+// Fetch users route
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Delete user route
+app.delete('/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await User.findByIdAndDelete(id);
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 });
